@@ -3,8 +3,10 @@ package spring.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import spring.dao.PersonRepository;
+import spring.exception.ObjectNotFoundException;
 import spring.model.Person;
 
 import java.io.IOException;
@@ -35,11 +37,22 @@ public class PersonController {
         return person;
     }
 
+    @RequestMapping(path = "/person/update", method = RequestMethod.POST)
+    public Person addPerson( @RequestBody Person person) {
+        personRepository.saveAndFlush(person);
+        return person;
+    }
+
     // url = /person?id=1
-    @RequestMapping(value="/person", params = {"id=1"})
+    @ExceptionHandler(NullPointerException.class)
+    @RequestMapping(value="/person")
     public Person getPersonByIdParam(@RequestParam("id") long id) {
         Person person = personRepository.findOne(id);
-        LOGGER.info("Get person={} with id={} from repository.");
+        if (ObjectUtils.isEmpty(person)) {
+            throw new ObjectNotFoundException(
+                    String.format("The person with id=%d cannot be found from repository", id));
+        }
+        LOGGER.info("Get person={} with id={} from repository.", person, id);
         return person;
     }
 
@@ -48,7 +61,11 @@ public class PersonController {
     @ResponseBody
     public Person getPersonByIdVariable(@PathVariable("id") long id) {
         Person person = personRepository.findOne(id);
-        LOGGER.info("Get person={} with id={} from repository.");
+        if (ObjectUtils.isEmpty(person)) {
+            throw new ObjectNotFoundException(
+                    String.format("The person with id=%d cannot be found from repository", id));
+        }
+        LOGGER.info("Get person={} with id={} from repository.", person, id);
         return person;
     }
 
