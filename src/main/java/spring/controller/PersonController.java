@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import spring.dao.PersonRepository;
-import spring.exception.ObjectNotFoundException;
+import spring.exception.model.ObjectNotFoundException;
 import spring.model.Person;
 
 import java.io.IOException;
@@ -44,8 +44,8 @@ public class PersonController {
     }
 
     // url = /person?id=1
-    @ExceptionHandler(NullPointerException.class)
-    @RequestMapping(value="/person")
+    @RequestMapping(value="/person", method = RequestMethod.GET)
+    @ResponseBody
     public Person getPersonByIdParam(@RequestParam("id") long id) {
         Person person = personRepository.findOne(id);
         if (ObjectUtils.isEmpty(person)) {

@@ -1,6 +1,5 @@
 package spring;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +10,14 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import spring.dao.PersonRepository;
+import spring.exception.message.ErrorInfo;
 import spring.model.Person;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -39,11 +41,10 @@ public class TestPersonController {
     }
 
     @Test
-    @Ignore
     public void testGetPersonByIdParamNotFound() throws Exception {
         when(personRepository.findOne(ID)).thenReturn(null);
-        this.mockMvc.perform(get("/person?id="+1)).andExpect(status().isNotFound());
-        //.andExpect(jsonPath("$.content").value("Hello, World!"));
+        this.mockMvc.perform(get("/person?id="+ID)).andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value(ErrorInfo.ERROR));
     }
 
     @Test
@@ -57,7 +58,6 @@ public class TestPersonController {
     public void testGetPersonByIdVariable() throws Exception {
         when(personRepository.findOne(ID)).thenReturn(new Person("testFirstName", "testLastName"));
         this.mockMvc.perform(get("/person/" + ID)).andExpect(status().isOk());
-        //.andExpect(jsonPath("$.content").value("Hello, World!"));
     }
 
 }
