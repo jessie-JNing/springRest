@@ -29,6 +29,7 @@ public class GlobalExceptionHandler {
         r.setCode(ErrorInfo.ERROR);
         r.setData("Testing data");
         r.setUrl(req.getRequestURL().toString());
+
         return r;
     }
 

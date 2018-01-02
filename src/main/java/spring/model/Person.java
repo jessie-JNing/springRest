@@ -1,14 +1,17 @@
 package spring.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "PERSON")
-public class Person {
+public class Person implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "PERSON_ID", nullable = false)
     private long id;
 
     @Column(name = "FIRST_NAME", nullable = false)
@@ -17,11 +20,15 @@ public class Person {
     @Column(name = "LAST_NAME", nullable = false)
     private String lastName;
 
+    @OneToOne(cascade = CascadeType.ALL, mappedBy="person")
+    private Address address;
+
     public Person() {}
 
-    public Person(String firstName, String lastName) {
+    public Person(String firstName, String lastName, Address address) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.address = address;
     }
 
     public String getFirstName() {
@@ -40,13 +47,20 @@ public class Person {
         this.lastName = lastName;
     }
 
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
 
     @Override
     public String toString() {
         return "Person{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
+                "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
+                ", address=" + address +
                 '}';
     }
 }

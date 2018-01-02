@@ -7,6 +7,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import spring.dao.PersonRepository;
 import spring.exception.model.ObjectNotFoundException;
+import spring.model.Address;
 import spring.model.Person;
 
 import java.io.IOException;
@@ -28,10 +29,12 @@ public class PersonController {
         return persons;
     }
 
-    @RequestMapping(path = "/person/add", method = RequestMethod.POST)
+    @RequestMapping(path = "/person/add/get", method = RequestMethod.GET)
     @ResponseBody
     public Person addPerson() {
-        Person person = new Person("postFirst", "postLast");
+        Address address = new Address("country", "province", "city");
+        Person person = new Person("postFirst", "postLast", address);
+        //address.setPerson(person);
         personRepository.saveAndFlush(person);
         LOGGER.info("Put person={} in to repository.");
         return person;
@@ -46,7 +49,7 @@ public class PersonController {
     // url = /person?id=1
     @RequestMapping(value="/person", method = RequestMethod.GET)
     @ResponseBody
-    public Person getPersonByIdParam(@RequestParam("id") long id) {
+    public Person getPersonByIdParam(@RequestParam("id") long id) throws Exception{
         Person person = personRepository.findOne(id);
         if (ObjectUtils.isEmpty(person)) {
             throw new ObjectNotFoundException(
@@ -59,7 +62,7 @@ public class PersonController {
     // url = /person/1
     @RequestMapping(value = "/person/{id}", method = RequestMethod.GET)
     @ResponseBody
-    public Person getPersonByIdVariable(@PathVariable("id") long id) {
+    public Person getPersonByIdVariable(@PathVariable("id") long id) throws Exception{
         Person person = personRepository.findOne(id);
         if (ObjectUtils.isEmpty(person)) {
             throw new ObjectNotFoundException(
